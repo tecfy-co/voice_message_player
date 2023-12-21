@@ -29,7 +29,7 @@ class Noises extends StatelessWidget {
             (e) => SingleNoise(
               activeSliderColor: activeSliderColor,
               height: e,
-              noiseWidth: noiseWidth / (rList.length * 2.5),
+              width: noiseWidth / (rList.length * 2),
             ),
           )
           .toList(),

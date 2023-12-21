@@ -12,12 +12,12 @@ class SingleNoise extends StatefulWidget {
     super.key,
     required this.activeSliderColor,
     required this.height,
-    required this.noiseWidth,
+    required this.width,
   });
 
   /// The color of the active slider.
   final Color activeSliderColor;
-  final double noiseWidth;
+  final double width;
 
   /// The height of the noise.
   final double height;
@@ -34,8 +34,8 @@ class _SingleNoiseState extends State<SingleNoise> {
   /// Build the widget.
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: .2.w()),
-      width: widget.noiseWidth,
+      margin: EdgeInsets.only(left: widget.width),
+      width: widget.width,
       height: widget.height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(1000),

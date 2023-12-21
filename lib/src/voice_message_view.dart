@@ -132,7 +132,7 @@ class VoiceMessageView extends StatelessWidget {
 
   Widget _noises(ThemeData newTHeme) {
     return LayoutBuilder(builder: (context, constr) {
-      controller.init(constr.maxWidth - 2);
+      controller.init(constr.maxWidth);
       return SizedBox(
         height: 30,
         width: controller.noiseWidth,
