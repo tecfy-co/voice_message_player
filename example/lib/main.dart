@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
                   VoiceMessageView(
                     controller: VoiceController(
                       audioSrc:
-                          'https://dl.musichi.ir/1401/06/21/Ghors%202.mp3',
+                          'https://eu2.contabostorage.com/051b18991d4c4fdf9470eb1a6f2c251c:tecfy.ticket/files/Tecfy/20663217070/1397585487799059',
                       maxDuration: const Duration(seconds: 10),
                       isFile: false,
                       onComplete: () {

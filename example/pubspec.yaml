@@ -9,7 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  sizer:
+  sizer: any
   voice_message_package: 
     path: ../
 

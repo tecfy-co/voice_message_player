@@ -19,6 +19,7 @@ class VoiceMessageView extends StatelessWidget {
     this.activeSliderColor = Colors.red,
     this.notActiveSliderColor,
     this.circlesColor = Colors.red,
+    this.playPauseColor = Colors.red,
     this.innerPadding = 12,
     this.cornerRadius = 20,
     this.size = 38,
@@ -41,6 +42,7 @@ class VoiceMessageView extends StatelessWidget {
 
   ///
   final Color circlesColor;
+  final Color playPauseColor;
 
   /// The color of the active slider.
   final Color activeSliderColor;
@@ -78,49 +80,53 @@ class VoiceMessageView extends StatelessWidget {
       splashColor: Colors.transparent,
     );
 
-    return Container(
-      padding: EdgeInsets.all(innerPadding),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(cornerRadius),
-      ),
-      child: ValueListenableBuilder(
-        /// update ui when change play status
-        valueListenable: controller.updater,
-        builder: (context, value, child) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              /// play pause button
-              PlayPauseButton(controller: controller, color: color, size: size),
+    return LayoutBuilder(builder: (context, constr) {
+      controller.init(constr.maxWidth - 150);
+      return Container(
+        padding: EdgeInsets.all(innerPadding),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(cornerRadius),
+        ),
+        child: ValueListenableBuilder(
+          /// update ui when change play status
+          valueListenable: controller.updater,
+          builder: (context, value, child) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// play pause button
+                PlayPauseButton(
+                    controller: controller, color: playPauseColor, size: size),
 
-              ///
-              const SizedBox(width: 10),
+                ///
+                const SizedBox(width: 10),
 
-              /// slider & noises
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  _noises(newTHeme),
-                  const SizedBox(height: 4),
-                  Text(controller.remindingTime, style: counterTextStyle),
-                ],
-              ),
+                /// slider & noises
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    _noises(newTHeme),
+                    const SizedBox(height: 4),
+                    Text(controller.remindingTime, style: counterTextStyle),
+                  ],
+                ),
 
-              ///
-              const SizedBox(width: 12),
+                ///
+                const SizedBox(width: 12),
 
-              /// speed button
-              _changeSpeedButton(color),
+                /// speed button
+                _changeSpeedButton(color),
 
-              ///
-              const SizedBox(width: 10),
-            ],
-          );
-        },
-      ),
-    );
+                ///
+                const SizedBox(width: 10),
+              ],
+            );
+          },
+        ),
+      );
+    });
   }
 
   SizedBox _noises(ThemeData newTHeme) => SizedBox(
@@ -131,6 +137,7 @@ class VoiceMessageView extends StatelessWidget {
           children: [
             /// noises
             Noises(
+              noiseWidth: controller.noiseWidth,
               rList: controller.randoms!,
               activeSliderColor: activeSliderColor,
             ),
