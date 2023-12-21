@@ -41,7 +41,7 @@ class VoiceController extends MyTicker {
   final bool isFile;
   PlayStatus playStatus = PlayStatus.init;
   PlaySpeed speed = PlaySpeed.x1;
-  ValueNotifier updater = ValueNotifier(null);
+  ValueNotifier<int> updater = ValueNotifier<int>(0);
   List<double>? randoms;
   StreamSubscription? positionStream;
   StreamSubscription? playerStateStream;
@@ -86,7 +86,10 @@ class VoiceController extends MyTicker {
   });
 
   /// Initializes the voice controller.
+  bool isInited = false;
   Future init(double _noiseWidth) async {
+    if (isInited) return;
+    isInited = true;
     noiseWidth = _noiseWidth;
     if (randoms?.isEmpty ?? true) _setRandoms();
     animController = AnimationController(
@@ -94,7 +97,7 @@ class VoiceController extends MyTicker {
       upperBound: noiseWidth,
       duration: maxDuration,
     );
-    _updateUi();
+    // _updateUi();
     _listenToRemindingTime();
     _listenToPlayerState();
   }
@@ -142,13 +145,14 @@ class VoiceController extends MyTicker {
   }
 
   void _updateUi() {
-    // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
-    updater.notifyListeners();
+    // updater.notifyListeners();
+
+    updater.value++;
   }
 
   /// Stops playing the voice.
   Future stopPlaying() async {
-    _player.pause();
+    await _player.pause();
     playStatus = PlayStatus.stop;
   }
 
@@ -179,8 +183,9 @@ class VoiceController extends MyTicker {
   }
 
   /// Pauses the voice playback.
-  void pausePlaying() {
-    _player.pause();
+  void pausePlaying() async {
+    await _player.pause();
+    await Future.delayed(Duration(milliseconds: 50));
     playStatus = PlayStatus.pause;
     _updateUi();
     onPause();
@@ -197,10 +202,10 @@ class VoiceController extends MyTicker {
       if (event.eventType == AudioEventType.complete) {
         // await _player.stop();
         // currentDuration = Duration.zero;
-        // playStatus = PlayStatus.init;
+        playStatus = PlayStatus.init;
         // animController.reset();
-        // _updateUi();
-        // onComplete(id);
+        _updateUi();
+        // onComplete();
       } else if (event.eventType == AudioEventType.position) {
         playStatus = PlayStatus.playing;
         _updateUi();
@@ -245,7 +250,7 @@ class VoiceController extends MyTicker {
 
   void _setRandoms() {
     randoms = [];
-    for (var i = 0; i < (noiseWidth / 3); i++) {
+    for (var i = 0; i < (noiseWidth / 5.5); i++) {
       randoms!.add(5.74.w() * Random().nextDouble() + .26.w());
     }
   }

@@ -18,27 +18,30 @@ class MyApp extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  VoiceMessageView(
-                    controller: VoiceController(
-                      audioSrc:
-                          'https://eu2.contabostorage.com/051b18991d4c4fdf9470eb1a6f2c251c:tecfy.ticket/files/Tecfy/20663217070/1397585487799059',
-                      maxDuration: const Duration(seconds: 10),
-                      isFile: false,
-                      onComplete: () {
-                        /// do something on complete
-                      },
-                      onPause: () {
-                        /// do something on pause
-                      },
-                      onPlaying: () {
-                        /// do something on playing
-                      },
-                      onError: (err) {
-                        /// do somethin on error
-                      },
+                  SizedBox(
+                    width: 300,
+                    child: VoiceMessageView(
+                      controller: VoiceController(
+                        audioSrc:
+                            'https://eu2.contabostorage.com/051b18991d4c4fdf9470eb1a6f2c251c:tecfy.ticket/files/Tecfy/20663217070/1397585487799059',
+                        maxDuration: const Duration(seconds: 200),
+                        isFile: false,
+                        onComplete: () {
+                          /// do something on complete
+                        },
+                        onPause: () {
+                          /// do something on pause
+                        },
+                        onPlaying: () {
+                          /// do something on playing
+                        },
+                        onError: (err) {
+                          /// do something on error
+                        },
+                      ),
+                      innerPadding: EdgeInsets.all(10),
+                      cornerRadius: 20,
                     ),
-                    innerPadding: 12,
-                    cornerRadius: 20,
                   ),
                 ],
               ),

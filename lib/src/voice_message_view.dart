@@ -19,8 +19,8 @@ class VoiceMessageView extends StatelessWidget {
     this.activeSliderColor = Colors.red,
     this.notActiveSliderColor,
     this.circlesColor = Colors.red,
-    this.playPauseColor = Colors.red,
-    this.innerPadding = 12,
+    this.playPauseColor = Colors.white,
+    this.innerPadding,
     this.cornerRadius = 20,
     this.size = 38,
     this.circlesTextStyle = const TextStyle(
@@ -57,7 +57,7 @@ class VoiceMessageView extends StatelessWidget {
   final TextStyle counterTextStyle;
 
   /// The padding between the inner content and the outer container.
-  final double innerPadding;
+  final EdgeInsets? innerPadding;
 
   /// The corner radius of the outer container.
   final double cornerRadius;
@@ -80,56 +80,60 @@ class VoiceMessageView extends StatelessWidget {
       splashColor: Colors.transparent,
     );
 
-    return LayoutBuilder(builder: (context, constr) {
-      controller.init(constr.maxWidth - 150);
-      return Container(
-        padding: EdgeInsets.all(innerPadding),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(cornerRadius),
-        ),
-        child: ValueListenableBuilder(
-          /// update ui when change play status
-          valueListenable: controller.updater,
-          builder: (context, value, child) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// play pause button
-                PlayPauseButton(
-                    controller: controller, color: playPauseColor, size: size),
+    return Container(
+      padding: innerPadding,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(cornerRadius),
+      ),
+      child: ValueListenableBuilder(
+        /// update ui when change play status
+        valueListenable: controller.updater,
+        builder: (context, value, child) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// play pause button
+              PlayPauseButton(
+                  controller: controller,
+                  bgColor: color,
+                  color: playPauseColor,
+                  size: size),
 
-                ///
-                const SizedBox(width: 10),
+              ///
+              const SizedBox(width: 10),
 
-                /// slider & noises
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 8),
-                    _noises(newTHeme),
-                    const SizedBox(height: 4),
-                    Text(controller.remindingTime, style: counterTextStyle),
-                  ],
-                ),
+              /// slider & noises
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 8),
+                  _noises(newTHeme),
+                  const SizedBox(height: 4),
+                  Text(controller.remindingTime, style: counterTextStyle),
+                ],
+              )),
 
-                ///
-                const SizedBox(width: 12),
+              ///
+              const SizedBox(width: 12),
 
-                /// speed button
-                _changeSpeedButton(color),
+              /// speed button
+              _changeSpeedButton(color),
 
-                ///
-                const SizedBox(width: 10),
-              ],
-            );
-          },
-        ),
-      );
-    });
+              ///
+              const SizedBox(width: 10),
+            ],
+          );
+        },
+      ),
+    );
   }
 
-  SizedBox _noises(ThemeData newTHeme) => SizedBox(
+  Widget _noises(ThemeData newTHeme) {
+    return LayoutBuilder(builder: (context, constr) {
+      controller.init(constr.maxWidth - 2);
+      return SizedBox(
         height: 30,
         width: controller.noiseWidth,
         child: Stack(
@@ -185,6 +189,8 @@ class VoiceMessageView extends StatelessWidget {
           ],
         ),
       );
+    });
+  }
 
   Transform _changeSpeedButton(Color color) => Transform.translate(
         offset: const Offset(0, -7),
