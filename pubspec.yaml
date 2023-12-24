@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   audioplayers: ^5.2.1
   syncfusion_flutter_sliders: ^24.1.41
+  ffmpeg_kit_flutter: ^6.0.3
+  path_provider:
+  http:
 
 dev_dependencies:
   flutter_test:
