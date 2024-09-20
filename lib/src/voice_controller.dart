@@ -254,12 +254,19 @@ class VoiceController extends MyTicker {
         if (!result) return false;
 
         await _player.play(DeviceFileSource(filePath!));
-        await _player.setPlaybackRate(speed.getSpeed);
-        var duration = await _player.getDuration();
-        if (duration != null) {
-          maxDuration = duration;
+        if (speed.getSpeed != 1.0) {
+          await _player.setPlaybackRate(speed.getSpeed);
         }
-        animController.duration = maxDuration;
+
+        //----------------
+        // the following lines make some audio files not working on Web and some mobile devices
+        // like https://ticketsrv.tecfy.co/file/general/6522d2bded272cf3786b52ab/66ec60e9230596533635fac1-audio_202409190835.ogg
+        //----------------
+        // var duration = await _player.getDuration();
+        // if (duration != null) {
+        //   maxDuration = duration;
+        // }
+        // animController.duration = maxDuration;
         return true;
       }
     } catch (err) {
@@ -278,7 +285,7 @@ class VoiceController extends MyTicker {
     }
 
     //----------------
-    // the following lines make some audio files not working on Web and some mobile devices 
+    // the following lines make some audio files not working on Web and some mobile devices
     // like https://ticketsrv.tecfy.co/file/general/6522d2bded272cf3786b52ab/66ec60e9230596533635fac1-audio_202409190835.ogg
     //----------------
     // var duration = await _player.getDuration();
