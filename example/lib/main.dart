@@ -23,7 +23,9 @@ class MyApp extends StatelessWidget {
                     child: VoiceMessageView(
                       controller: VoiceController(
                         audioSrc:
-                            'https://eu2.contabostorage.com/051b18991d4c4fdf9470eb1a6f2c251c:tecfy.ticket/files/Tecfy/20663217070/1397585487799059',
+                            'https://ticketsrv.tecfy.co/file/general/6522d2bded272cf3786b52ab/66ec60e9230596533635fac1-audio_202409190835.ogg',
+                        // audioSrc:
+                        //     'https://eu2.contabostorage.com/051b18991d4c4fdf9470eb1a6f2c251c:tecfy.ticket/files/Tecfy/20663217070/1397585487799059',
                         maxDuration: const Duration(seconds: 200),
                         isFile: false,
                         onComplete: () {
