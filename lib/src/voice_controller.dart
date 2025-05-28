@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+// import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+// import 'package:ffmpeg_kit_flutter/return_code.dart';
+// import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -92,6 +92,8 @@ class VoiceController extends MyTicker {
     this.randoms,
   });
 
+  // final FlutterSoundHelper _soundHelper = FlutterSoundHelper();
+
   Future<bool> _convertRecordedFile() async {
     if (filePath != null) return true;
     if (audioSrc.isEmpty) {
@@ -108,61 +110,9 @@ class VoiceController extends MyTicker {
         (await getApplicationDocumentsDirectory()).path,
         "audio.ogg"
       ].join('/');
-      await File(filePathSource).writeAsBytes(bytes!);
       filePath = "$filePathSource.aac";
-      if (await File(filePath!).exists()) {
-        await File(filePath!).delete();
-      }
-      var session = await FFmpegKit.execute(
-          '-i "$filePathSource" -c:a aac -strict -2 "$filePath"');
-      final returnCode = await session.getReturnCode();
-      if (!ReturnCode.isSuccess(returnCode)) {
-        print('XXXXXXXXXXXXXXXXXX Error converting file');
-        print(returnCode);
-        playStatus = PlayStatus.downloadError;
-        _updateUi();
-        return false;
-      }
+      await File(filePath!).writeAsBytes(bytes!);
 
-      if (await File(filePath!).exists()) {
-        print('++++++++++++++++++++++++++ found!!');
-        filePath = filePath;
-      } else {
-        print('XXXXXXXXX Audio file not found!!');
-        playStatus = PlayStatus.downloadError;
-        _updateUi();
-        return false;
-      }
-      // // Unique session id created for this execution
-      // final sessionId = session.getSessionId();
-      // print('sessionId : $sessionId');
-
-      // // Command arguments as a single string
-      // final command = session.getCommand();
-      // print('command : $command');
-
-      // // Command arguments
-      // final commandArguments = session.getArguments();
-      // print('commandArguments : $commandArguments');
-
-      // // State of the execution. Shows whether it is still running or completed
-      // final state = await session.getState();
-      // print('state : $state}');
-
-      // final startTime = session.getStartTime();
-      // print('startTime : $startTime');
-      // final endTime = await session.getEndTime();
-      // print('endTime : $endTime');
-      // final duration = await session.getDuration();
-      // print('duration : $duration');
-
-      // // Console output generated for this execution
-      // final output = await session.getOutput();
-      // print('output : $output');
-
-      // // The stack trace if FFmpegKit fails to run a command
-      // final failStackTrace = await session.getFailStackTrace();
-      // print('failStackTrace : $failStackTrace');
       print('file downloaded and converted successfully!');
       playStatus = PlayStatus.init;
       _updateUi();
@@ -173,6 +123,57 @@ class VoiceController extends MyTicker {
       return false;
     }
   }
+  // Future<bool> _convertRecordedFile() async {
+  //   if (filePath != null) return true;
+  //   if (audioSrc.isEmpty) {
+  //     playStatus = PlayStatus.downloadError;
+  //     _updateUi();
+  //     print('XXXXX source URI is blank!');
+  //     return false;
+  //   }
+  //   print('start download ausio file..');
+  //   try {
+  //     var res = await http.get(Uri.parse(audioSrc));
+  //     bytes = res.bodyBytes;
+  //     var filePathSource = [
+  //       (await getApplicationDocumentsDirectory()).path,
+  //       "audio.ogg"
+  //     ].join('/');
+  //     await File(filePathSource).writeAsBytes(bytes!);
+  //     filePath = "$filePathSource.aac";
+  //     if (await File(filePath!).exists()) {
+  //       await File(filePath!).delete();
+  //     }
+  //     var session = await FFmpegKit.execute(
+  //         '-i "$filePathSource" -c:a aac -strict -2 "$filePath"');
+  //     final returnCode = await session.getReturnCode();
+  //     if (!ReturnCode.isSuccess(returnCode)) {
+  //       print('XXXXXXXXXXXXXXXXXX Error converting file');
+  //       print(returnCode);
+  //       playStatus = PlayStatus.downloadError;
+  //       _updateUi();
+  //       return false;
+  //     }
+
+  //     if (await File(filePath!).exists()) {
+  //       print('++++++++++++++++++++++++++ found!!');
+  //       filePath = filePath;
+  //     } else {
+  //       print('XXXXXXXXX Audio file not found!!');
+  //       playStatus = PlayStatus.downloadError;
+  //       _updateUi();
+  //       return false;
+  //     }
+  //     print('file downloaded and converted successfully!');
+  //     playStatus = PlayStatus.init;
+  //     _updateUi();
+  //     return true;
+  //   } catch (err, t) {
+  //     print(err);
+  //     print(t);
+  //     return false;
+  //   }
+  // }
 
   /// Initializes the voice controller.
   bool isInited = false;
@@ -215,14 +216,14 @@ class VoiceController extends MyTicker {
   }
 
   void _listenToRemindingTime() {
-    positionStream = _player.eventStream.listen((event) async {
-      if (event.position == null) return;
-      if (!isDownloading) currentDuration = event.position!;
-
+    positionStream = _player.onDurationChanged.listen((event) async {
+      // if (event.position == null) return;
+      // if (!isDownloading) currentDuration = event.position!;
+      currentDuration = event;
       final value = (noiseWidth * currentMillSeconds) / maxMillSeconds;
       animController.value = value;
       _updateUi();
-      if (event.position!.inMilliseconds >= maxMillSeconds) {
+      if (event.inMilliseconds >= maxMillSeconds) {
         await _player.stop();
         currentDuration = Duration.zero;
         playStatus = PlayStatus.init;
@@ -231,6 +232,22 @@ class VoiceController extends MyTicker {
         onComplete();
       }
     });
+    // positionStream = _player.eventStream.listen((event) async {
+    //   if (event.position == null) return;
+    //   if (!isDownloading) currentDuration = event.position!;
+
+    //   final value = (noiseWidth * currentMillSeconds) / maxMillSeconds;
+    //   animController.value = value;
+    //   _updateUi();
+    //   if (event.position!.inMilliseconds >= maxMillSeconds) {
+    //     await _player.stop();
+    //     currentDuration = Duration.zero;
+    //     playStatus = PlayStatus.init;
+    //     animController.reset();
+    //     _updateUi();
+    //     onComplete();
+    //   }
+    // });
   }
 
   void _updateUi() {
@@ -317,7 +334,7 @@ class VoiceController extends MyTicker {
         // animController.reset();
         _updateUi();
         // onComplete();
-      } else if (event.eventType == AudioEventType.position) {
+      } else if (event.eventType == AudioEventType.duration) {
         playStatus = PlayStatus.playing;
         _updateUi();
       }
