@@ -216,20 +216,23 @@ class VoiceController extends MyTicker {
   }
 
   void _listenToRemindingTime() {
-    positionStream = _player.onDurationChanged.listen((event) async {
+    positionStream = _player.onPositionChanged.listen((position) async {
       // if (event.position == null) return;
-      // if (!isDownloading) currentDuration = event.position!;
-      currentDuration = event;
+      if (!isDownloading) currentDuration = position;
+
       final value = (noiseWidth * currentMillSeconds) / maxMillSeconds;
       animController.value = value;
-      _updateUi();
-      if (event.inMilliseconds >= maxMillSeconds) {
+
+      if (position.inMilliseconds >= maxMillSeconds) {
         await _player.stop();
         currentDuration = Duration.zero;
         playStatus = PlayStatus.init;
         animController.reset();
         _updateUi();
         onComplete();
+      } else {
+        playStatus = PlayStatus.playing;
+        _updateUi();
       }
     });
     // positionStream = _player.eventStream.listen((event) async {
@@ -268,12 +271,19 @@ class VoiceController extends MyTicker {
         if (!result) return false;
 
         await _player.play(DeviceFileSource(filePath!));
-        await _player.setPlaybackRate(speed.getSpeed);
-        var duration = await _player.getDuration();
-        if (duration != null) {
-          maxDuration = duration;
+        if (speed.getSpeed != 1.0) {
+          await _player.setPlaybackRate(speed.getSpeed);
         }
-        animController.duration = maxDuration;
+
+        //----------------
+        // the following lines make some audio files not working on Web and some mobile devices
+        // like https://ticketsrv.tecfy.co/file/general/6522d2bded272cf3786b52ab/66ec60e9230596533635fac1-audio_202409190835.ogg
+        //----------------
+        // var duration = await _player.getDuration();
+        // if (duration != null) {
+        //   maxDuration = duration;
+        // }
+        // animController.duration = maxDuration;
         return true;
       }
     } catch (err) {
@@ -285,14 +295,21 @@ class VoiceController extends MyTicker {
   /// Starts playing the voice.
   Future startPlaying(String path) async {
     if (await _tryToDownloadAndPlayFile()) return;
-
+    // print(path);
     await _player.play(UrlSource(path));
-    await _player.setPlaybackRate(speed.getSpeed);
-    var duration = await _player.getDuration();
-    if (duration != null) {
-      maxDuration = duration;
+    if (speed.getSpeed != 1.0) {
+      await _player.setPlaybackRate(speed.getSpeed);
     }
-    animController.duration = maxDuration;
+
+    //----------------
+    // the following lines make some audio files not working on Web and some mobile devices
+    // like https://ticketsrv.tecfy.co/file/general/6522d2bded272cf3786b52ab/66ec60e9230596533635fac1-audio_202409190835.ogg
+    //----------------
+    // var duration = await _player.getDuration();
+    // if (duration != null) {
+    //   maxDuration = duration;
+    // }
+    // animController.duration = maxDuration;
   }
 
   Future<void> dispose() async {
